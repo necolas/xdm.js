@@ -145,11 +145,11 @@ describe('an instance of xdm.Rpc', function () {
             });
         });
 
-        it('throws an error on nonexistant methods', function () {
+        it('throws an error on nonexistent methods', function () {
             var isError = false;
 
             runs(function () {
-                guest.errorMethod(expectedMessage, function (msg) {
+                guest.nonexistent(expectedMessage, function (msg) {
                     isComplete = true;
                 }, function (err) {
                     isError = true;
