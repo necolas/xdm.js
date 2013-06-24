@@ -5,14 +5,14 @@ basePath = '';
 
 // list of files / patterns to load in the browser
 files = [
-  JASMINE,
-  JASMINE_ADAPTER,
+    JASMINE,
+    JASMINE_ADAPTER,
 
-  'xdm.js',
+    'xdm.js',
 
-  {pattern: 'test/fixture/**/*.html', watched: true, served: true, included: false},
+    {pattern: 'test/fixture/**/*.html', watched: true, served: true, included: false},
 
-  'test/spec/**/*.js'
+    'test/spec/**/*.js'
 ];
 
 // use dots reporter, as travis terminal does not support escaping sequences
@@ -35,7 +35,9 @@ autoWatch = true;
 // start these browsers
 // CLI --browsers Chrome,Firefox,Safari
 browsers = [
-  'Chrome'
+    'Chrome',
+    'Firefox',
+    'Safari'
 ];
 
 // auto run tests on start (when browsers are captured) and exit
