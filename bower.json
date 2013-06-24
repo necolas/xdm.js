@@ -1,0 +1,13 @@
+{
+    "name": "xdm.js",
+    "description": "JSON-RPC 2.0 cross-domain messaging over postMessage",
+    "version": "0.0.0",
+    "main": "xdm.js",
+    "ignore": [
+        "test",
+        ".*",
+        "CHANGELOG.md",
+        "karma.conf.js",
+        "package.json"
+    ]
+}
