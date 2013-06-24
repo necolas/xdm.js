@@ -36,8 +36,7 @@ autoWatch = true;
 // CLI --browsers Chrome,Firefox,Safari
 browsers = [
     'Chrome',
-    'Firefox',
-    'Safari'
+    'Firefox'
 ];
 
 // auto run tests on start (when browsers are captured) and exit

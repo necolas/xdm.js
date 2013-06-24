@@ -6,6 +6,14 @@
 (function (window) {
     'use strict';
 
+    // stores namespace under which the 'xdm' object is stored on the page
+    // (empty if object is global)
+    var namespace = "";
+    var xdm = {};
+    // map over global xdm in case of overwrite
+    var _xdm = window.xdm;
+    var IFRAME_PREFIX = 'xdm_';
+
     var iframe = document.createElement('IFRAME');
     // randomize the initial id in case multiple closures are loaded
     var channelId = Math.floor(Math.random() * 10000);
@@ -16,51 +24,6 @@
     var reParent = /[\-\w]+\/\.\.\//;
     // matches `//` anywhere but in the protocol
     var reDoubleSlash = /([^:])\/\//g;
-
-    // stores namespace under which the 'xdm' object is stored on the page
-    // (empty if object is global)
-    var namespace = "";
-    var xdm = {};
-    // map over global xdm in case of overwrite
-    var _xdm = window.xdm;
-    var IFRAME_PREFIX = 'xdm_';
-
-    /**
-     * GUEST ONLY
-     * build the query object from location.hash
-     */
-
-    var query = (function (input) {
-        input = input.substring(1, input.length).split('&');
-        var data = {}, pair, i = input.length;
-        while (i--) {
-            pair = input[i].split('=');
-            data[pair[0]] = decodeURIComponent(pair[1]);
-        }
-        return data;
-    }(location.hash));
-
-    /**
-     * Helper for testing if an object is an array
-     *
-     * @param {Object} obj The object to test
-     * @return {Boolean}
-     */
-
-    function isArray(obj) {
-        return Object.prototype.toString.call(obj) === '[object Array]';
-    }
-
-    /**
-     * Helper for testing if a variable/property is undefined
-     *
-     * @param {Object} variable The variable to test
-     * @return {Boolean}
-     */
-
-    function undef(variable) {
-        return typeof variable === 'undefined';
-    }
 
     /**
      * Helper for adding and removing cross-browser event listeners
@@ -89,6 +52,30 @@
     }());
 
     /**
+     * Build the query object from location.hash
+     */
+
+    var query = (function (input) {
+        input = input.substring(1, input.length).split('&');
+        var data = {}, pair, i = input.length;
+        while (i--) {
+            pair = input[i].split('=');
+            data[pair[0]] = decodeURIComponent(pair[1]);
+        }
+        return data;
+    }(location.hash));
+
+    // -------------------------------------------------------------------------
+
+    /**
+     * xdm object setup
+     */
+
+    xdm.version = "1.0.0";
+    xdm.stack = {};
+    xdm.query = query;
+
+    /**
      * Removes the `xdm` variable from the global scope. It also returns control
      * of the `xdm` variable to the code that used it before.
      *
@@ -97,13 +84,37 @@
      * @return {xdm}
      */
 
-    function noConflict(ns) {
+    xdm.noConflict = function (ns) {
         window.xdm = _xdm;
         namespace = ns;
         if (namespace) {
             IFRAME_PREFIX = 'xdm_' + namespace.replace('.', '_') + '_';
         }
         return xdm;
+    };
+
+    // -------------------------------------------------------------------------
+
+    /**
+     * Helper for testing if an object is an array
+     *
+     * @param {Object} obj The object to test
+     * @return {Boolean}
+     */
+
+    function isArray(obj) {
+        return Object.prototype.toString.call(obj) === '[object Array]';
+    }
+
+    /**
+     * Helper for testing if a variable/property is undefined
+     *
+     * @param {Object} variable The variable to test
+     * @return {Boolean}
+     */
+
+    function undef(variable) {
+        return typeof variable === 'undefined';
     }
 
     /**
@@ -144,10 +155,10 @@
             throw new Error('url is undefined or empty');
         }
 
-        // replace all // except the one in proto with /
+        // replace all `//` except the one in proto with `/`
         url = url.replace(reDoubleSlash, '$1/');
 
-        // If the url is a valid url we do nothing
+        // if the url is a valid url we do nothing
         if (!url.match(/^(http||https):\/\//)) {
             // If this is a relative path
             var path = (url.substring(0, 1) === '/') ? '' : location.pathname;
@@ -164,32 +175,6 @@
         }
 
         return url;
-    }
-
-    /**
-     * HOST ONLY
-     * Appends the parameters to the given url.
-     * The base url can contain existing query parameters.
-     *
-     * @param {String} url The base url.
-     * @param {Object} parameters The parameters to add.
-     * @return {String} A new valid url with the parameters appended.
-     */
-
-    function appendQueryParameters(url, parameters) {
-        if (!parameters) {
-            throw new Error('parameters is undefined or null');
-        }
-
-        var indexOf = url.indexOf('#');
-        var q = [];
-        for (var key in parameters) {
-            if (parameters.hasOwnProperty(key)) {
-                q.push(key + '=' + encodeURIComponent(parameters[key]));
-            }
-        }
-
-        return url + (indexOf === -1 ? '#' : '&') + q.join('&');
     }
 
     /**
@@ -222,6 +207,60 @@
     }
 
     /**
+     * GUEST ONLY
+     * Check whether a host domain is allowed using an Access Control List.
+     * The ACL can contain `*` and `?` as wildcards, or can be regular expressions.
+     * If regular expressions they need to begin with `^` and end with `$`.
+     *
+     * @param {Array/String} acl The list of allowed domains
+     * @param {String} domain The domain to test.
+     * @return {Boolean} True if the domain is allowed, false if not.
+     */
+
+    function checkAcl(acl, domain) {
+        // normalize into an array
+        if (typeof acl === 'string') {
+            acl = [acl];
+        }
+        var re;
+        var i = acl.length;
+        while (i--) {
+            re = acl[i];
+            re = new RegExp(re.substr(0, 1) === '^' ? re : ('^' + re.replace(/(\*)/g, '.$1').replace(/\?/g, '.') + '$'));
+            if (re.test(domain)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * HOST ONLY
+     * Appends the parameters to the given url.
+     * The base url can contain existing query parameters.
+     *
+     * @param {String} url The base url.
+     * @param {Object} parameters The parameters to add.
+     * @return {String} A new valid url with the parameters appended.
+     */
+
+    function appendQueryParameters(url, parameters) {
+        if (!parameters) {
+            throw new Error('parameters is undefined or null');
+        }
+
+        var indexOf = url.indexOf('#');
+        var q = [];
+        for (var key in parameters) {
+            if (parameters.hasOwnProperty(key)) {
+                q.push(key + '=' + encodeURIComponent(parameters[key]));
+            }
+        }
+
+        return url + (indexOf === -1 ? '#' : '&') + q.join('&');
+    }
+
+    /**
      * HOST ONLY
      * Creates an iframe and appends it to the DOM.
      *
@@ -235,7 +274,7 @@
         // merge the defaults with the configuration properties
         merge(config.props, {
             frameBorder: 0,
-            allowTRansparency: true,
+            allowTransparency: true,
             scrolling: 'no',
             width: '100%',
             src: appendQueryParameters(config.remote, {
@@ -280,33 +319,6 @@
         config.iframe = frame;
 
         return frame;
-    }
-
-    /**
-     * Check whether a domain is allowed using an Access Control List.
-     * The ACL can contain * and ? as wildcards, or can be regular expressions.
-     * If regular expressions they need to begin with ^ and end with $.
-     *
-     * @param {Array/String} acl The list of allowed domains
-     * @param {String} domain The domain to test.
-     * @return {Boolean} True if the domain is allowed, false if not.
-     */
-
-    function checkAcl(acl, domain) {
-        // normalize into an array
-        if (typeof acl === 'string') {
-            acl = [acl];
-        }
-        var re;
-        var i = acl.length;
-        while (i--) {
-            re = acl[i];
-            re = new RegExp(re.substr(0, 1) === '^' ? re : ('^' + re.replace(/(\*)/g, '.$1').replace(/\?/g, '.') + '$'));
-            if (re.test(domain)) {
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -400,37 +412,6 @@
         element.down.up = element.up;
         element.up = element.down = null;
     }
-
-    /**
-     * xdm
-     */
-
-    merge(xdm, {
-        /**
-         * The version of the library
-         * @type {string}
-         */
-        version: "1.0.0",
-        /**
-         * This is a map containing all the query parameters passed to the document.
-         * All the values have been decoded using decodeURIComponent.
-         * @type {object}
-         */
-        query: query,
-        /**
-         * @private
-         */
-        stack: {},
-        /**
-         * Removes xdm variable from the global scope. It also returns control
-         * of the xdm variable to whatever code used it before.
-         *
-         * @param {String} ns A string representation of an object that will hold
-         *   an instance of xdm.
-         * @return {xdm}
-         */
-        noConflict: noConflict
-    });
 
     /**
      * xdm.Rpc
