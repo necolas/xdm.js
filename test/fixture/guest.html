@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Guest window</title>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        Guest window
+        <script src="/base/xdm.js"></script>
+        <script>
+            var host = new xdm.Rpc({
+                onReady: function () {
+                }
+            }, {
+                remote: {
+                    voidCallback: {}
+                },
+                local: {
+                    voidMethod: function (msg) {
+                        // echo back the message
+                        remote.voidCallback(msg);
+                    },
+                    asyncMethod: function (msg, fn) {
+                        window.setTimeout(function () {
+                            // echo back the message
+                            fn(msg);
+                        }, 100);
+                    },
+                    regularMethod: function (msg) {
+                        // echo back the msg
+                        return msg;
+                    },
+                    errorMethod: function () {
+                        var a;
+                        var b = a.c;
+                    },
+                    namedParamsMethod: {
+                        method: function (params) {
+                            return params.msg;
+                        }
+                    }
+                }
+            });
+        </script>
+    </body>
+</html>
