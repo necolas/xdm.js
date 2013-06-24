@@ -1,6 +1,6 @@
 {
   "name": "xdm.js",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "devDependencies": {
     "karma": "~0.8.5"
   },
