@@ -6,6 +6,10 @@
 (function (window) {
     'use strict';
 
+    if (!window.postMessage) {
+        return;
+    }
+
     // stores namespace under which the 'xdm' object is stored on the page
     // (empty if object is global)
     var namespace = "";
