@@ -28,7 +28,7 @@ application.
 
 The version of the library.
 
-### xdm.Rpc(config, methods);
+### xdm.Rpc(xdmConfig, rpcConfig);
 
 The cross-domain RPC constructor.
 
@@ -40,44 +40,45 @@ Creates an iframe to the remote window.
 
 ```js
 // connect to the host application
-var host = xdm.Rpc(config, methods);
+var host = xdm.Rpc(xdmConfig, rpcConfig);
 ```
 
-#### config.onReady (optional)
+#### xdmConfig.onReady (optional)
 
 Specify a function to call when communication has been established.
 
-#### config.container (host application only)
+#### xdmConfig.container (host application only)
 
 The DOM node to append the generated iframe to.
 
-#### config.remote (host application only)
+#### xdmConfig.remote (host application only)
 
 The path to the local or remote window. Set to 'about:blank' if using
 `config.html`.
 
-#### config.html (optional; host application only)
+#### xdmConfig.html (optional; host application only)
 
 The HTML to be injected into a sourceless iframe.
 
-#### config.props (optional; host application only)
+#### xdmConfig.props (optional; host application only)
 
 The additional attributes to set on the iframe. Can contain nested objects, e.g.,
 `'style': { 'border': '1px solid black' }`.
 
-#### config.acl (optional; guest application only)
+#### xdmConfig.acl (optional; guest application only)
 
 Add domains to an Access Control List. The ACL can contain `*` and `?` as
 wildcards, or can be regular expressions. If regular expressions they need to
 begin with `^` and end with `$`.
 
-#### methods.local (optional)
+#### rpcConfig.local (optional)
 
 All the methods you which to expose to the remote window.
 
 ```js
-var methods = {};
-methods.local = {
+var rpcConfig = {};
+
+rpcConfig.local = {
     namedMethod: function (data, success, error) { /* ... */ }
 };
 ```
@@ -92,13 +93,13 @@ To return an error you can use:
 
 `throw new Error('foo error')` or `error('foo error')`
 
-#### methods.remote (optional)
+#### rpcConfig.remote (optional)
 
 All the remote methods you want to use from the remote window when it's ready.
 These are just stubs.
 
 ```js
-methods.remote = {
+rpcConfig.remote = {
     remoteMethod: {}
 };
 ```
@@ -107,6 +108,8 @@ methods.remote = {
 
 ```js
 // host application creates new connection with a guest widget
+
+var isReady = false;
 
 var widget = new xdm.Rpc({
     remote: 'http://another.domain.com/widget.html',
@@ -122,18 +125,20 @@ var widget = new xdm.Rpc({
     }
 }, {
     remote: {
-        guestMethod: {}
+        methodInWidget: {}
     },
     local: {
-        hostMethod: function (msg) {
-            return msg;
+        methodInHost: function (data) {
+            return data;
         }
     }
 });
 
-widget.guestMethod('message');
+widget.methodInWidget('message');
 
 // guest application creates new connection with host application
+
+var isReady = false;
 
 var host = new xdm.Rpc({
     acl: [
@@ -145,16 +150,16 @@ var host = new xdm.Rpc({
     }
 }, {
     remote: {
-        hostMethod: {}
+        methodInHost: {}
     },
     local: {
-        guestMethod: function (msg) {
-            return msg;
+        methodInWidget: function (data) {
+            return data;
         }
     }
 });
 
-host.hostMethod('message')
+host.methodInHost('message')
 ```
 
 ### xdm.Rpc.iframe;
@@ -209,8 +214,8 @@ npm test
 
 ## Browser support
 
-* Google Chrome (latest)
-* Opera (latest)
+* Google Chrome
 * Firefox 4+
-* Safari 5+
 * Internet Explorer 8+
+* Safari 5+
+* Opera (latest)
