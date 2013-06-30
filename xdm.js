@@ -78,6 +78,7 @@
     xdm.version = "1.0.0";
     xdm.stack = {};
     xdm.query = query;
+    xdm.checkAcl = checkAcl;
 
     /**
      * Removes the `xdm` variable from the global scope. It also returns control

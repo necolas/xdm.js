@@ -13,6 +13,10 @@ describe('the xdm object', function () {
         expect(xdm.version).toBeDefined();
     });
 
+    it('exposes xdm.checkAcl', function () {
+        expect(xdm.checkAcl).toBeDefined();
+    });
+
     it('exposes xdm.stack', function () {
         expect(xdm.stack).toBeDefined();
     });
