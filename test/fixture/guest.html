@@ -18,7 +18,7 @@
                 local: {
                     voidMethod: function (msg) {
                         // echo back the message
-                        remote.voidCallback(msg);
+                        host.voidCallback(msg);
                     },
                     asyncMethod: function (msg, fn) {
                         window.setTimeout(function () {

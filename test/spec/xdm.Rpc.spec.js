@@ -5,6 +5,8 @@ describe('an instance of xdm.Rpc', function () {
     var guest;
     var i = 0;
     var isReady = false;
+    var isComplete = false;
+    var message;
 
     beforeEach(function () {
         // create a unique message
@@ -32,10 +34,9 @@ describe('an instance of xdm.Rpc', function () {
                 }
             },
             local: {
-                voidCallback: {
-                    method: function (message) {
-                        //scope.notifyResult((scope.expectedMessage === message));
-                    }
+                voidCallback: function (msg) {
+                    message = msg;
+                    isComplete = true;
                 }
             }
         });
@@ -48,6 +49,9 @@ describe('an instance of xdm.Rpc', function () {
 
     afterEach(function () {
         isReady = false;
+        isComplete = false;
+        message = null;
+
         guest.destroy();
     });
 
@@ -78,16 +82,18 @@ describe('an instance of xdm.Rpc', function () {
      */
 
     describe('remote method call', function () {
-        var message;
-        var isComplete = false;
-
-        afterEach(function () {
-            isComplete = false;
-            message = null;
-        });
-
         it('supports void methods', function () {
-            expect(guest.voidMethod(expectedMessage));
+            runs(function () {
+                guest.voidMethod(expectedMessage);
+            });
+
+            waitsFor(function () {
+                return isComplete;
+            });
+
+            runs(function () {
+                expect(message).toEqual(expectedMessage);
+            });
         });
 
         it('supports async methods', function () {
