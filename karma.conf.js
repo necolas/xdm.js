@@ -1,44 +1,58 @@
 // Karma configuration file
+//
+// For all available config options and default values, see:
+// https://github.com/karma-runner/karma/blob/stable/lib/config.js#L54
 
-// base path, that will be used to resolve files and exclude
-basePath = '';
+module.exports = function (config) {
+    'use strict';
 
-// list of files / patterns to load in the browser
-files = [
-    JASMINE,
-    JASMINE_ADAPTER,
+    config.set({
+        // base path, that will be used to resolve files and exclude
+        basePath: '',
 
-    'xdm.js',
+        frameworks: [
+            'jasmine'
+        ],
 
-    {pattern: 'test/fixture/**/*.html', watched: true, served: true, included: false},
+        // list of files / patterns to load in the browser
 
-    'test/spec/**/*.js'
-];
+        files: [
+            'xdm.js',
+            {pattern: 'test/fixture/**/*.html', watched: true, served: true, included: false},
+            'test/spec/**/*.js'
+        ],
 
-// use dots reporter, as travis terminal does not support escaping sequences
-// possible values: 'dots', 'progress', 'junit', 'teamcity'
-// CLI --reporters progress
-reporters = ['dots'];
+        // use dots reporter, as travis terminal does not support escaping sequences
+        // possible values: 'dots', 'progress', 'junit', 'teamcity'
+        // CLI --reporters progress
+        reporters: ['dots'],
 
-// web server port
-// CLI --port 9876
-port = 9876;
+        // enable / disable watching file and executing tests whenever any file changes
+        // CLI --auto-watch --no-auto-watch
+        autoWatch: true,
 
-// cli runner port
-// CLI --runner-port 9100
-runnerPort = 9100;
+        // start these browsers
+        // CLI --browsers Chrome,Firefox,Safari
+        browsers: [
+            'Chrome',
+            'Firefox'
+        ],
 
-// enable / disable watching file and executing tests whenever any file changes
-// CLI --auto-watch --no-auto-watch
-autoWatch = true;
+        // If browser does not capture in given timeout [ms], kill it
+        // CLI --capture-timeout 5000
+        captureTimeout: 20000,
 
-// start these browsers
-// CLI --browsers Chrome,Firefox,Safari
-browsers = [
-    'Chrome',
-    'Firefox'
-];
+        // Auto run tests on start (when browsers are captured) and exit
+        // CLI --single-run --no-single-run
+        singleRun: false,
 
-// auto run tests on start (when browsers are captured) and exit
-// CLI --single-run --no-single-run
-singleRun = false;
+        plugins: [
+            'karma-jasmine',
+            'karma-requirejs',
+            'karma-chrome-launcher',
+            'karma-firefox-launcher',
+            'karma-ie-launcher',
+            'karma-safari-launcher'
+        ]
+    });
+};
