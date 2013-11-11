@@ -1,5 +1,6 @@
 === HEAD
 
+* Remove loadrunner export.
 * Update to Karma 0.10.x.
 * Unit tests for `noConflict`.
 * Unit tests for `checkAcl`.
