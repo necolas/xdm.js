@@ -75,7 +75,7 @@
      * xdm object setup
      */
 
-    xdm.version = "1.0.0";
+    xdm.version = "1.0.1";
     xdm.stack = {};
     xdm.query = query;
     xdm.checkAcl = checkAcl;
