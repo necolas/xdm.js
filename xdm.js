@@ -859,10 +859,6 @@
     if (typeof exports === 'object') {
         module.exports = xdm;
     }
-    // loadrunner export
-    else if (typeof provide === 'function') {
-        provide(xdm);
-    }
     // amd export
     else if (typeof define === 'function' && define.amd) {
         define(function () {
