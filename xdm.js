@@ -291,7 +291,9 @@
             style: {
                 margin: 0,
                 padding: 0,
-                border: 0
+                border: 0,
+                position: 'absolute',
+                top: '-9999em'
             }
         });
 
