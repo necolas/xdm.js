@@ -1,5 +1,7 @@
 # xdm.js
 
+![unmaintained](http://img.shields.io/badge/status-unmaintained-red.png)
+
 [![Build Status](https://secure.travis-ci.org/necolas/xdm.js.png?branch=master)](http://travis-ci.org/necolas/xdm.js)
 
 Cross-domain messaging over postMessage, based on the [JSON-RPC
