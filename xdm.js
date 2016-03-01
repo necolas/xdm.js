@@ -531,7 +531,7 @@
                 if (config.isHost) {
                     // add the event handler for listening
                     var waitForReady = function (event) {
-                        if (event.data === config.channel + '-ready') {
+                        if (frame && event.data === config.channel + '-ready') {
                             if ('postMessage' in frame.contentWindow) {
                                 callerWindow = frame.contentWindow;
                             }
