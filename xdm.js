@@ -509,6 +509,30 @@
             }
         }
 
+        /**
+         * This adds the listener for messages when the frame is ready.
+         * @private
+         * @param {Object} event The messageevent
+         */
+        function _waitForReady(event) {
+            if (event.data === config.channel + '-ready') {
+                if ('postMessage' in frame.contentWindow) {
+                    callerWindow = frame.contentWindow;
+                }
+                else {
+                    callerWindow = frame.contentWindow.document;
+                }
+
+                // replace the eventlistener
+                removeEvent(window, 'message', _waitForReady);
+                addEvent(window, 'message', _windowOnMessage);
+
+                setTimeout(function () {
+                    pub.up.callback(true);
+                }, 0);
+            }
+        };
+
         pub = {
             outgoing: function (message, domain, fn) {
                 callerWindow.postMessage(config.channel + ' ' + message, domain || targetOrigin);
@@ -518,6 +542,7 @@
             },
 
             destroy: function () {
+                removeEvent(window, 'message', _waitForReady);
                 removeEvent(window, 'message', _windowOnMessage);
                 if (frame) {
                     callerWindow = null;
@@ -529,27 +554,7 @@
             init: function () {
                 targetOrigin = getLocation(config.remote);
                 if (config.isHost) {
-                    // add the event handler for listening
-                    var waitForReady = function (event) {
-                        if (event.data === config.channel + '-ready') {
-                            if ('postMessage' in frame.contentWindow) {
-                                callerWindow = frame.contentWindow;
-                            }
-                            else {
-                                callerWindow = frame.contentWindow.document;
-                            }
-
-                            // replace the eventlistener
-                            removeEvent(window, 'message', waitForReady);
-                            addEvent(window, 'message', _windowOnMessage);
-
-                            setTimeout(function () {
-                                pub.up.callback(true);
-                            }, 0);
-                        }
-                    };
-
-                    addEvent(window, 'message', waitForReady);
+                    addEvent(window, 'message', _waitForReady);
                     frame = createFrame(config);
                 }
                 else {
