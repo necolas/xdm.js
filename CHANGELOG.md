@@ -1,5 +1,9 @@
 === HEAD
 
+=== 1.0.2 (March 8, 2016)
+
+* Resolve 'frame is null' errors
+
 === 1.0.1 (October 11, 2013)
 
 * Remove loadrunner export.
