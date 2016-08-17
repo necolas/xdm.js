@@ -1,6 +1,6 @@
 {
   "name": "xdm.js",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "devDependencies": {
     "karma": "~0.10.1",
     "karma-jasmine": "~0.1.0",
