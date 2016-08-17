@@ -448,7 +448,7 @@
             for (var method in jsonRpcConfig.local) {
                 if (jsonRpcConfig.local.hasOwnProperty(method)) {
                     member = jsonRpcConfig.local[method];
-                    if (typeof member === 'function') {
+                    if (member instanceof Function) {
                         jsonRpcConfig.local[method] = {
                             method: member
                         };
@@ -704,9 +704,9 @@
                     method: method
                 };
 
-                if (l > 0 && typeof arguments[l - 1] === 'function') {
+                if (l > 0 && arguments[l - 1] instanceof Function) {
                     // one callback, procedure
-                    if (l > 1 && typeof arguments[l - 2] === 'function') {
+                    if (l > 1 && arguments[l - 2] instanceof Function) {
                         // two callbacks, success and error
                         callback = {
                             success: arguments[l - 2],
@@ -864,7 +864,7 @@
     if (typeof exports === 'object') {
         module.exports = xdm;
     }
-    // amd export
+    // amd export (won't execute enough to hit Safari's JIT bug)
     else if (typeof define === 'function' && define.amd) {
         define(function () {
             return xdm;
