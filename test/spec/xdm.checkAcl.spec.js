@@ -24,6 +24,10 @@ describe('xdm.checkAcl', function () {
         expect(xdm.checkAcl(acl, 'http://domcccain.com')).toBe(true);
     });
 
+    it('does not match . in string as wildcard', function () {
+        expect(xdm.checkAcl(acl, 'http://godomaina.com')).toBe(false);
+    });
+
     it('does not match', function () {
         expect(xdm.checkAcl(acl, 'http://foo.com')).toBe(false);
     });

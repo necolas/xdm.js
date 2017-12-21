@@ -1,8 +1,8 @@
 {
   "name": "xdm.js",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "devDependencies": {
-    "karma": "~0.10.1",
+    "karma": "^0.13.22",
     "karma-jasmine": "~0.1.0",
     "karma-chrome-launcher": "~0.1.0",
     "karma-ie-launcher": "~0.1.1",
