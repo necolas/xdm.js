@@ -1,5 +1,9 @@
 === HEAD
 
+=== 1.0.4 (March 8, 2016)
+
+* Fix ACL checking to be safer for non-regex domains
+
 === 1.0.2 (March 8, 2016)
 
 * Resolve 'frame is null' errors
