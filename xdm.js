@@ -218,7 +218,7 @@
      * @return {String} An escaped regex, with * and ? replaced as regex wildcards
      */
     function escapeRegExp(str) {
-      return str.replace(/[\-\[\]\/\{\}\(\)\+\.\\\^\$\|]/g, "\\$&").replace(/(\*)/g, '.$1').replace(/\?/g, '.');
+      return str.replace(/[-[\]/{}()+.\^$|]/g, "\\$&").replace(/(\*)/g, '.$1').replace(/\?/g, '.');
     }
 
     /**
